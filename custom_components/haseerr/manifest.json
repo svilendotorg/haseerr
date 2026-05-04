@@ -13,8 +13,8 @@
     "webhook"
   ],
   "documentation": "https://github.com/svilendotorg/haseerr",
-  "iot_class": "cloud_polling",
   "integration_type": "service",
+  "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/svilendotorg/haseerr/issues",
   "requirements": [],
   "version": "0.3.0"
