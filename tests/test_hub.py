@@ -292,3 +292,31 @@ async def test_list_users(fixture, seerr_url, seerr_api_key):
         "display_name": "Alice",
         "email": "alice@example.com",
     }
+
+
+@pytest.mark.asyncio
+async def test_get_user_permissions(seerr_url, seerr_api_key):
+    """Returns the permissions bitmask field from /api/v1/user/<id>."""
+    async with ClientSession() as session:
+        with aioresponses() as m:
+            m.get(
+                f"{seerr_url}/api/v1/user/4",
+                payload={"id": 4, "displayName": "Alice", "permissions": 4096},
+            )
+            client = SeerrClient(session, seerr_url, seerr_api_key)
+            perms = await client.get_user_permissions(4)
+            assert perms == 4096
+
+
+@pytest.mark.asyncio
+async def test_get_user_permissions_defaults_to_zero(seerr_url, seerr_api_key):
+    """Missing permissions field is treated as 0 (no perms)."""
+    async with ClientSession() as session:
+        with aioresponses() as m:
+            m.get(
+                f"{seerr_url}/api/v1/user/4",
+                payload={"id": 4, "displayName": "Alice"},
+            )
+            client = SeerrClient(session, seerr_url, seerr_api_key)
+            perms = await client.get_user_permissions(4)
+            assert perms == 0

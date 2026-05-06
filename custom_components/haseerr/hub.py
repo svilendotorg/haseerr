@@ -154,6 +154,11 @@ class SeerrClient:
         """Return Seerr's quota info for a user: {movie: {limit, used, restricted}, tv: {...}}."""
         return await self._request("GET", f"/api/v1/user/{user_id}/quota")
 
+    async def get_user_permissions(self, user_id: int) -> int:
+        """Return the user's permission bitmask from /api/v1/user/<id>."""
+        data = await self._request("GET", f"/api/v1/user/{user_id}")
+        return int(data.get("permissions", 0))
+
     async def list_users(self) -> list[dict]:
         """Return all Seerr users as normalized dicts."""
         data = await self._request("GET", "/api/v1/user", params={"take": 200, "sort": "created"})
