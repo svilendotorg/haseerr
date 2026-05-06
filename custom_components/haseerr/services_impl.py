@@ -110,9 +110,7 @@ def _sensor(hass: HomeAssistant, entry: ConfigEntry):
     return hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("sensor")
 
 
-async def _check_4k_permission(
-    client: SeerrClient, user_id: int, media_type: str
-) -> None:
+async def _check_4k_permission(client: SeerrClient, user_id: int, media_type: str) -> None:
     """Raise SeerrPermissionError if user_id can't request 4K of media_type.
 
     Music has no 4K concept and is always rejected as a sanity guard.

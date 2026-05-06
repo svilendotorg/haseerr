@@ -7,9 +7,8 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-
 from homeassistant.exceptions import HomeAssistantError
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.haseerr.const import (
     DOMAIN,
@@ -169,14 +168,22 @@ async def _call_4k_request(hass, media_type, perms, *, expect_error=False):
 
     async def fake_request(self, **kwargs):
         request_called.append(kwargs)
-        return {"request_id": 99, "status": "pending", "seerr_user_id": 4, "seerr_user_display": "Alice"}
+        return {
+            "request_id": 99,
+            "status": "pending",
+            "seerr_user_id": 4,
+            "seerr_user_display": "Alice",
+        }
 
-    with patch(
-        "custom_components.haseerr.hub.SeerrClient.get_user_permissions",
-        return_value=perms,
-    ), patch(
-        "custom_components.haseerr.hub.SeerrClient.request",
-        new=fake_request,
+    with (
+        patch(
+            "custom_components.haseerr.hub.SeerrClient.get_user_permissions",
+            return_value=perms,
+        ),
+        patch(
+            "custom_components.haseerr.hub.SeerrClient.request",
+            new=fake_request,
+        ),
     ):
         try:
             await hass.services.async_call(
@@ -244,12 +251,15 @@ async def test_request_4k_music_rejected_no_lookup(hass: HomeAssistant, configur
         request_calls.append(kwargs)
         return {"request_id": 99, "status": "pending"}
 
-    with patch(
-        "custom_components.haseerr.hub.SeerrClient.get_user_permissions",
-        new=fake_perms,
-    ), patch(
-        "custom_components.haseerr.hub.SeerrClient.request",
-        new=fake_request,
+    with (
+        patch(
+            "custom_components.haseerr.hub.SeerrClient.get_user_permissions",
+            new=fake_perms,
+        ),
+        patch(
+            "custom_components.haseerr.hub.SeerrClient.request",
+            new=fake_request,
+        ),
     ):
         with pytest.raises(HomeAssistantError) as ei:
             await hass.services.async_call(
@@ -278,12 +288,15 @@ async def test_request_non_4k_skips_permission_check(hass: HomeAssistant, config
     async def fake_request(self, **kwargs):
         return {"request_id": 1, "status": "pending"}
 
-    with patch(
-        "custom_components.haseerr.hub.SeerrClient.get_user_permissions",
-        new=fake_perms,
-    ), patch(
-        "custom_components.haseerr.hub.SeerrClient.request",
-        new=fake_request,
+    with (
+        patch(
+            "custom_components.haseerr.hub.SeerrClient.get_user_permissions",
+            new=fake_perms,
+        ),
+        patch(
+            "custom_components.haseerr.hub.SeerrClient.request",
+            new=fake_request,
+        ),
     ):
         await hass.services.async_call(
             DOMAIN,

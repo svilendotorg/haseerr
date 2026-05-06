@@ -41,7 +41,7 @@ def test_en_translations_cover_all_services():
         if "description" not in en_svc:
             missing.append(f"services.{svc_name}.description")
         en_fields = en_svc.get("fields", {})
-        for field_name in (svc_def.get("fields") or {}):
+        for field_name in svc_def.get("fields") or {}:
             if field_name not in en_fields:
                 missing.append(f"services.{svc_name}.fields.{field_name}")
     assert not missing, f"Missing en.json entries: {missing}"
@@ -76,6 +76,6 @@ def test_exceptions_block_present_in_both_locales():
         data = _load_json(locale)
         msg = data.get("exceptions", {}).get("not_authorized_4k", {}).get("message")
         assert msg, f"{locale}.json: exceptions.not_authorized_4k.message missing"
-        assert "{media_type}" in msg, (
-            f"{locale}.json: message must contain {{media_type}} placeholder, got: {msg!r}"
-        )
+        assert (
+            "{media_type}" in msg
+        ), f"{locale}.json: message must contain {{media_type}} placeholder, got: {msg!r}"
