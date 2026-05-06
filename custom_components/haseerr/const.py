@@ -49,7 +49,7 @@ PENDING_CONFIRM_KEY: Final = "pending_confirm"
 PENDING_CONFIRM_TTL_S: Final = 60
 
 # Seerr permission bitmask values (from Overseerr's user.permissions field)
-PERM_ADMIN = 2
-PERM_REQUEST_4K = 4096
-PERM_REQUEST_4K_MOVIE = 8192
-PERM_REQUEST_4K_TV = 16384
+PERM_ADMIN: Final = 2
+PERM_REQUEST_4K: Final = 4096
+PERM_REQUEST_4K_MOVIE: Final = 8192
+PERM_REQUEST_4K_TV: Final = 16384
