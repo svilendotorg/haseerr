@@ -47,3 +47,9 @@ TMDB_POSTER_BASE: Final = "https://image.tmdb.org/t/p"
 # hass.data[DOMAIN][PENDING_CONFIRM_KEY][user_id] = {tmdb_id, media_type, title, expires_at}
 PENDING_CONFIRM_KEY: Final = "pending_confirm"
 PENDING_CONFIRM_TTL_S: Final = 60
+
+# Seerr permission bitmask values (from Overseerr's user.permissions field)
+PERM_ADMIN = 2
+PERM_REQUEST_4K = 4096
+PERM_REQUEST_4K_MOVIE = 8192
+PERM_REQUEST_4K_TV = 16384

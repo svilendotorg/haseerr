@@ -77,6 +77,10 @@ class SeerrApiError(SeerrError):
     """Seerr returned a non-2xx response (other than 401)."""
 
 
+class SeerrPermissionError(SeerrError):
+    """User lacks permission for the requested operation."""
+
+
 class SeerrClient:
     """Thin async wrapper around Seerr's REST API."""
 
