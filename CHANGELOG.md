@@ -2,6 +2,13 @@
 
 All notable changes to HaSeerr.
 
+## v0.4.2 — 2026-05-06
+
+### Fixed
+
+- **Frontend cache busting** — the haseerr-card was registered as a Lovelace resource at a stable URL with no version query string, so HA Companion app webviews (Android/iOS) cached the old card across releases until users manually cleared the cache. The card URL is now `/haseerr_static/haseerr-card.js?v=<integration_version>`, sourced from `manifest.json` at module load. On every release the URL changes and the webview re-fetches.
+- **Lovelace resource reconciliation** — registration now matches existing entries by base path (`/haseerr_static/haseerr-card.js`) and **updates** them to the new versioned URL instead of skipping. Prior versions silently no-op'd if any haseerr-card entry already existed, leaving stale URLs in place forever. Net effect: HACS users upgrading from earlier versions get the cache-bust on first restart.
+
 ## v0.4.1 — 2026-05-06
 
 ### Added — voice-intent STT robustness

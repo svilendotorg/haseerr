@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import secrets
+from pathlib import Path
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -14,7 +16,17 @@ from .services_impl import async_register_services, async_unregister_services
 _LOGGER = logging.getLogger(__name__)
 
 
-CARD_URL = "/haseerr_static/haseerr-card.js"
+def _haseerr_version() -> str:
+    """Read version from manifest.json (used as a cache-buster on the card URL)."""
+    try:
+        manifest = json.loads((Path(__file__).parent / "manifest.json").read_text())
+        return str(manifest.get("version", "0"))
+    except Exception:
+        return "0"
+
+
+CARD_URL_PATH = "/haseerr_static/haseerr-card.js"
+CARD_URL = f"{CARD_URL_PATH}?v={_haseerr_version()}"
 
 
 async def _register_card(hass: HomeAssistant) -> None:
@@ -74,11 +86,27 @@ async def _register_lovelace_resource(hass: HomeAssistant) -> None:
         return
     try:
         await resources.async_load()
+        existing_id = None
+        existing_url = None
         for item in resources.async_items():
-            if item.get("url") == CARD_URL:
-                return  # already registered
-        await resources.async_create_item({"url": CARD_URL, "res_type": "module"})
-        _LOGGER.info("Registered haseerr-card as a Lovelace resource: %s", CARD_URL)
+            url = item.get("url", "")
+            # Match by base path so old `?v=<prev>` entries get updated, not duplicated.
+            if url.split("?", 1)[0] == CARD_URL_PATH:
+                existing_id = item.get("id")
+                existing_url = url
+                break
+        if existing_id is not None:
+            if existing_url == CARD_URL:
+                return  # already up-to-date
+            await resources.async_update_item(
+                existing_id, {"url": CARD_URL, "res_type": "module"}
+            )
+            _LOGGER.info(
+                "Updated haseerr-card Lovelace resource: %s → %s", existing_url, CARD_URL
+            )
+        else:
+            await resources.async_create_item({"url": CARD_URL, "res_type": "module"})
+            _LOGGER.info("Registered haseerr-card as a Lovelace resource: %s", CARD_URL)
     except Exception as err:
         _LOGGER.warning(
             "Could not auto-register haseerr-card resource: %s. Add %s manually "
