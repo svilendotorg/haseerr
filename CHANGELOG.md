@@ -2,6 +2,23 @@
 
 All notable changes to HaSeerr.
 
+## v0.4.0 — 2026-05-06
+
+### Added
+
+- **4K permission gating** — `haseerr.request` with `is_4k: true` checks the mapped Seerr user's permission bitmask via `/api/v1/user/<id>` and rejects with a localized error before any Seerr write. Recognizes `REQUEST_4K` (4096), `REQUEST_4K_MOVIE` (8192), `REQUEST_4K_TV` (16384), and bypasses for `ADMIN` (2). Music requests with `is_4k=true` are rejected outright (no 4K concept).
+- **Localized service descriptions** — full EN+BG parity. `translations/en.json` gap-filled (`is_4k`, `title`, full `user_quota` service); `translations/bg.json` gained the entire `services` block. New `exceptions.not_authorized_4k.message` in both locales surfaces the 4K rejection in the user's HA frontend language.
+- **Card 4K toggle** — global `4K` checkbox above the search box in `haseerr-card`. When on, every `Request` click submits with `is_4k: true`. Music results never submit 4K. Success toast shows `· 4K` suffix when applicable.
+- **Translation parity tests** (`tests/test_translations.py`) — three structural tests catch drift: `services.yaml` ↔ `en.json`, `en.json` ↔ `bg.json`, and the `exceptions.not_authorized_4k.message` placeholder check across both locales.
+
+### Changed
+
+- **BG voice intents** — `RequestMedia` now uses the colloquial verbs `свали` ("download") and `намери` ("find"). The bookish `поискай` is removed across all sentence patterns. Resolves a grammar bug in the previous `(можеш ли да|моля) поискай` pattern (mixed `да`-form imperatives are invalid Bulgarian).
+
+### No breaking changes
+
+- 4K rejection on unauthorized requests was previously a generic `SeerrApiError` from Seerr; it is now a localized `HomeAssistantError`. Existing automations that catch `Exception` keep working; those parsing the error message will see different text (in the user's locale).
+
 ## v0.3.0 — 2026-05-04
 
 ### Added
