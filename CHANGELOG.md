@@ -2,6 +2,41 @@
 
 All notable changes to HaSeerr.
 
+## v0.4.1 — 2026-05-06
+
+### Added — voice-intent STT robustness
+
+Real-world testing against the BG fine-tuned Whisper model (`svilendotorg/whisper-medium-bg-ct2`, derived from `shripadbhat/whisper-medium-bg`) surfaced a number of speech-to-text mistranscriptions that didn't match the v0.4.0 patterns. This release expands `intents/{en,bg}.yaml` to absorb them.
+
+**Bulgarian `RequestMedia`:**
+- Added STT-quirk verb variants: `истегли`, `изтеглий`, `изтъгли`, `изтегляй`, `свалий`, `набери`
+- Added English-loanword variants Whisper-bg produces when hearing "download": `донлоад`, `донлоуд`, `даунлоад`, `даунлоуд`, `донвоадът`, `донлоадът`, `даумо`
+- Added optional `[от]` and `[и]` filler particles between verb and title (absorbs "изтегли **и** Терминатор" filler)
+- Added `ми` ("for me") indirect-object form for all verbs
+
+**Bulgarian `ConfirmRequest`:**
+- Added `да.`, `— да.`, `— да` (literal punctuation/em-dash variants in case hassil's normalizer doesn't strip them for BG)
+- Added natural confirmations: `добре`, `разбрано`, `окей`, `ок`, `точно така` (with punctuation/em-dash variants for each)
+
+**Bulgarian `CancelRequest`:**
+- Added `стига`, `недей`
+
+**English `RequestMedia`:**
+- Added verb alternatives to `request`: `download`, `find`, `search`, `get me`
+- Added `downward` (Whisper STT mishear of "download")
+- All polite (`please`/`can you`) and season-suffixed forms work for every verb
+
+**English `ConfirmRequest`:**
+- Added `yep`
+
+### Fixed
+
+- BG voice intents from v0.4.0 used a simplified slot schema (`slots: title: { wildcard: true }`) that silently fails on non-EN languages in HA's hassil matcher. Migrated to the full hassil schema with a top-level `lists:` block, which is what HA's `default_agent` actually loads from `<config>/custom_sentences/<lang>/<file>.yaml`. The integration's `intents/<lang>.yaml` files are reference; the user must still copy them into `<config>/custom_sentences/` per the integration's voice docs.
+
+### No breaking changes
+
+- All v0.4.0 patterns still match. v0.4.1 only adds variants.
+
 ## v0.4.0 — 2026-05-06
 
 ### Added
