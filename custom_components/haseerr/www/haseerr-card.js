@@ -30,8 +30,86 @@ class HaSeerrCard extends LitElement {
       color: white; padding: 8px 12px; border-radius: 4px;
       margin-top: 8px;
     }
-    .input-row { display: flex; gap: 8px; }
+    .input-row { display: flex; gap: 8px; align-items: stretch; }
     .input-row input { flex: 1; padding: 8px; }
+    .quality-chip {
+      background: transparent;
+      border: 1.5px solid var(--divider-color);
+      color: var(--secondary-text-color);
+      padding: 0 14px;
+      border-radius: 16px;
+      font-size: 0.78em;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .quality-chip:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    .quality-chip.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: var(--text-primary-color, white);
+    }
+    .quality-chip.active:hover {
+      filter: brightness(1.1);
+    }
+    .quota-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .quota-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 0.78em;
+      background: var(--secondary-background-color, rgba(0, 0, 0, 0.04));
+      color: var(--primary-text-color);
+    }
+    .quota-icon { font-size: 0.95em; line-height: 1; }
+    .quota-count {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.2px;
+    }
+    .quota-bar {
+      width: 36px;
+      height: 4px;
+      background: var(--divider-color);
+      border-radius: 2px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .quota-fill {
+      display: block;
+      height: 100%;
+      background: var(--success-color, #4caf50);
+      transition: width 0.3s ease, background 0.2s;
+    }
+    .quota-pill.mid .quota-fill {
+      background: var(--warning-color, #ff9800);
+    }
+    .quota-pill.warn .quota-fill {
+      background: #ff7043;
+    }
+    .quota-pill.full .quota-fill {
+      background: var(--error-color, #f44336);
+    }
+    .quota-pill.full {
+      color: var(--error-color, #f44336);
+    }
+    .quota-pill.unlimited {
+      opacity: 0.7;
+    }
   `;
 
   setConfig(config) {
@@ -126,10 +204,29 @@ class HaSeerrCard extends LitElement {
     if (!this._config.show_quota || !this._quota) return "";
     const m = this._quota.movie || {};
     const t = this._quota.tv || {};
-    const fmt = (q) => q.limit ? `${q.used ?? 0}/${q.limit}` : "∞";
+    const pct = (q) => (q.limit ? Math.min(100, Math.round(((q.used ?? 0) / q.limit) * 100)) : 0);
+    const fmt = (q) => (q.limit ? `${q.used ?? 0}/${q.limit}` : "∞");
+    const stateClass = (q) => {
+      if (!q.limit) return "unlimited";
+      const p = pct(q);
+      if (p >= 100) return "full";
+      if (p >= 80) return "warn";
+      if (p >= 50) return "mid";
+      return "ok";
+    };
+    const pill = (icon, q, label) => html`
+      <span class="quota-pill ${stateClass(q)}" title=${`${label}: ${fmt(q)}`}>
+        <span class="quota-icon">${icon}</span>
+        <span class="quota-count">${fmt(q)}</span>
+        ${q.limit
+          ? html`<span class="quota-bar"><span class="quota-fill" style="width:${pct(q)}%"></span></span>`
+          : ""}
+      </span>
+    `;
     return html`
-      <div style="font-size: 0.85em; color: var(--secondary-text-color); margin-bottom: 8px;">
-        🎬 ${fmt(m)} Movies · 📺 ${fmt(t)} TV
+      <div class="quota-row">
+        ${pill("🎬", m, "Movies")}
+        ${pill("📺", t, "TV")}
       </div>
     `;
   }
@@ -153,16 +250,6 @@ class HaSeerrCard extends LitElement {
     return html`
       <ha-card .header=${this._config.title || ""}>
         ${this._renderQuota()}
-        <div class="toggle-row" style="padding: 0 8px 4px;">
-          <label style="font-size: 0.9em; cursor: pointer;">
-            <input
-              type="checkbox"
-              .checked=${this._is4k}
-              @change=${(e) => (this._is4k = e.target.checked)}
-            />
-            4K
-          </label>
-        </div>
         <div class="input-row">
           <input
             type="text"
@@ -171,6 +258,13 @@ class HaSeerrCard extends LitElement {
             @input=${(e) => (this._query = e.target.value)}
             @keydown=${(e) => e.key === "Enter" && this._onSearch()}
           />
+          <button
+            type="button"
+            class="quality-chip ${this._is4k ? "active" : ""}"
+            @click=${() => (this._is4k = !this._is4k)}
+            title=${this._is4k ? "4K request enabled" : "Toggle 4K request"}
+            aria-pressed=${this._is4k}
+          >4K</button>
           <button @click=${this._onSearch}>🔍</button>
         </div>
         ${this._loading ? html`<div>Searching…</div>` : ""}
