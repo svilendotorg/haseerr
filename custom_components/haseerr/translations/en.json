@@ -67,7 +67,9 @@
         "tmdb_id": { "name": "TMDB ID", "description": "TheMovieDB ID of the title." },
         "media_type": { "name": "Media type", "description": "movie or tv" },
         "seasons": { "name": "Seasons", "description": "TV only. Omit for all seasons." },
-        "user_override": { "name": "User override", "description": "Admin only — override the auto-resolved Seerr user." }
+        "user_override": { "name": "User override", "description": "Admin only — override the auto-resolved Seerr user." },
+        "is_4k": { "name": "4K", "description": "Submit as a 4K request. Requires Seerr to have a 4K Radarr/Sonarr server configured and the user to have 4K request permission." },
+        "title": { "name": "Title", "description": "Optional display title; included in the haseerr_request_submitted event for logging." }
       }
     },
     "approve_request": {
@@ -84,6 +86,18 @@
         "request_id": { "name": "Request ID", "description": "Seerr request id." },
         "reason": { "name": "Reason", "description": "Optional reason recorded with the decline." }
       }
+    },
+    "user_quota": {
+      "name": "Get user quota",
+      "description": "Return Seerr's request quota for the caller's mapped user.",
+      "fields": {
+        "user_override": { "name": "User override", "description": "Admin only — return quota for the specified Seerr user id instead of the caller." }
+      }
+    }
+  },
+  "exceptions": {
+    "not_authorized_4k": {
+      "message": "Not authorized to request 4K {media_type}."
     }
   }
 }
