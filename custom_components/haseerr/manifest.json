@@ -2,6 +2,7 @@
   "domain": "haseerr",
   "name": "HaSeerr",
   "after_dependencies": [
+    "conversation",
     "overseerr"
   ],
   "codeowners": [
