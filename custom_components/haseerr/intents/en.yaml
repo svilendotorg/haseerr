@@ -3,13 +3,16 @@ intents:
   RequestMedia:
     data:
       - sentences:
-          - "request {title}"
+          - "(request|download|find|search|get me) {title}"
+          - "(can you|please) (request|download|find|search|get me) {title}"
           - "add {title} to (Seerr|Plex|Jellyfin)"
-          - "(can you|please) request {title}"
-          - "request {title} season {season}"
         slots:
-          title: { wildcard: true }
-          season: { wildcard: true, optional: true }
+          title: "{title}"
+      - sentences:
+          - "(request|download|find|search|get me) {title} season {season}"
+        slots:
+          title: "{title}"
+          season: "{season}"
   ConfirmRequest:
     data:
       - sentences:
@@ -24,5 +27,10 @@ intents:
           - "no"
           - "cancel"
           - "abort"
-          - "nevermind"
           - "never mind"
+          - "nevermind"
+lists:
+  title:
+    wildcard: true
+  season:
+    wildcard: true
