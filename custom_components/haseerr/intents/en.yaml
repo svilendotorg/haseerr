@@ -3,13 +3,13 @@ intents:
   RequestMedia:
     data:
       - sentences:
-          - "(request|download|find|search|get me) {title}"
-          - "(can you|please) (request|download|find|search|get me) {title}"
+          - "(request|download|downward|find|search|get me) {title}"
+          - "(can you|please) (request|download|downward|find|search|get me) {title}"
           - "add {title} to (Seerr|Plex|Jellyfin)"
         slots:
           title: "{title}"
       - sentences:
-          - "(request|download|find|search|get me) {title} season {season}"
+          - "(request|download|downward|find|search|get me) {title} season {season}"
         slots:
           title: "{title}"
           season: "{season}"
@@ -18,6 +18,7 @@ intents:
       - sentences:
           - "yes"
           - "yes please"
+          - "yep"
           - "confirm"
           - "go ahead"
           - "do it"
