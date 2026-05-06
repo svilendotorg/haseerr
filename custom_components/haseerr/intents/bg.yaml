@@ -3,15 +3,21 @@ intents:
   RequestMedia:
     data:
       - sentences:
-          - "свали {title}"
+          - "(изтегли|истегли) {title}"
+          - "(изтегли|истегли) ми {title}"
           - "намери {title}"
+          - "намери ми {title}"
           - "добави {title} в (Seerr|Plex|Jellyfin)"
-          - "можеш ли да (свалиш|намериш) {title}"
-          - "моля (свали|намери) {title}"
-          - "(свали|намери) {title} сезон {season}"
+          - "можеш ли да (изтеглиш|истеглиш|намериш) {title}"
+          - "моля да (изтеглиш|истеглиш|намериш) {title}"
+          - "моля (изтегли|истегли|намери) {title}"
         slots:
-          title: { wildcard: true }
-          season: { wildcard: true, optional: true }
+          title: "{title}"
+      - sentences:
+          - "(изтегли|истегли|намери) {title} сезон {season}"
+        slots:
+          title: "{title}"
+          season: "{season}"
   ConfirmRequest:
     data:
       - sentences:
@@ -25,3 +31,8 @@ intents:
           - "не"
           - "отказ"
           - "забрави"
+lists:
+  title:
+    wildcard: true
+  season:
+    wildcard: true
