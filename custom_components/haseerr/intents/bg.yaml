@@ -3,10 +3,12 @@ intents:
   RequestMedia:
     data:
       - sentences:
-          - "поискай {title}"
+          - "свали {title}"
+          - "намери {title}"
           - "добави {title} в (Seerr|Plex|Jellyfin)"
-          - "(можеш ли да|моля) поискай {title}"
-          - "поискай {title} сезон {season}"
+          - "можеш ли да (свалиш|намериш) {title}"
+          - "моля (свали|намери) {title}"
+          - "(свали|намери) {title} сезон {season}"
         slots:
           title: { wildcard: true }
           season: { wildcard: true, optional: true }
