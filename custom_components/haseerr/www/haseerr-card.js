@@ -10,6 +10,7 @@ class HaSeerrCard extends LitElement {
     _loading: { state: true },
     _toast: { state: true },
     _quota: { state: true },
+    _is4k: { state: true },
   };
 
   static styles = css`
@@ -49,6 +50,7 @@ class HaSeerrCard extends LitElement {
     this._loading = false;
     this._toast = "";
     this._quota = null;
+    this._is4k = false;
   }
 
   connectedCallback() {
@@ -104,11 +106,13 @@ class HaSeerrCard extends LitElement {
         title: result.title,
       };
       if (result.media_type === "tv" && seasons) data.seasons = seasons;
+      if (this._is4k && result.media_type !== "music") data.is_4k = true;
       const resp = await this.hass.callService(
         "haseerr", "request", data, undefined, false, true
       );
       const r = resp.response;
-      this._toast = `Requested ${result.title} for ${r.seerr_user_display} — ${r.status}`;
+      const suffix = data.is_4k ? " · 4K" : "";
+      this._toast = `Requested ${result.title} for ${r.seerr_user_display} — ${r.status}${suffix}`;
       this._query = "";
       this._results = [];
       // Refresh quota since the count went up
@@ -149,6 +153,16 @@ class HaSeerrCard extends LitElement {
     return html`
       <ha-card .header=${this._config.title || ""}>
         ${this._renderQuota()}
+        <div class="toggle-row" style="padding: 0 8px 4px;">
+          <label style="font-size: 0.9em; cursor: pointer;">
+            <input
+              type="checkbox"
+              .checked=${this._is4k}
+              @change=${(e) => (this._is4k = e.target.checked)}
+            />
+            4K
+          </label>
+        </div>
         <div class="input-row">
           <input
             type="text"
